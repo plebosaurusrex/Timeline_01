@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark">
+<title>Su'Hur Timeline — Echo, Drift</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+html{background:#06080f}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+–bg:        #06080f;
+–bg2:       #0a0d18;
+–line:      rgba(200,180,140,0.12);
+–accent:    #f4a03a;
+–accent2:   #c8785a;
+–dim:       rgba(200,180,140,0.38);
+–text:      rgba(224,216,200,0.82);
+–muted:     rgba(200,180,140,0.32);
+–ce:        #7ab8d4;
+–pc:        #a8c878;
+–pe:        #d4a870;
+–fd:        ‘Cinzel’, serif;
+–fb:        ‘Crimson Pro’, Georgia, serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: var(–fb);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* ── STAR FIELD ── */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image:
+radial-gradient(1px 1px at 15% 20%, rgba(200,210,255,0.6) 0%, transparent 100%),
+radial-gradient(1px 1px at 72% 8%,  rgba(200,210,255,0.4) 0%, transparent 100%),
+radial-gradient(1.5px 1.5px at 38% 55%, rgba(255,220,160,0.5) 0%, transparent 100%),
+radial-gradient(1px 1px at 88% 42%, rgba(200,210,255,0.35) 0%, transparent 100%),
+radial-gradient(1px 1px at 5%  78%, rgba(200,210,255,0.4) 0%, transparent 100%),
+radial-gradient(1px 1px at 55% 88%, rgba(200,210,255,0.3) 0%, transparent 100%),
+radial-gradient(1px 1px at 92% 72%, rgba(255,220,160,0.35) 0%, transparent 100%),
+radial-gradient(1px 1px at 28% 33%, rgba(200,210,255,0.25) 0%, transparent 100%),
+radial-gradient(1px 1px at 64% 62%, rgba(200,210,255,0.3) 0%, transparent 100%),
+radial-gradient(1px 1px at 44% 14%, rgba(200,210,255,0.4) 0%, transparent 100%);
+pointer-events: none;
+z-index: 0;
+}
+
+/* ── LAYOUT ── */
+.page {
+position: relative;
+z-index: 1;
+max-width: 900px;
+margin: 0 auto;
+padding: 0 32px 120px;
+}
+
+/* ── HEADER ── */
+header {
+padding: 72px 0 56px;
+border-bottom: 1px solid var(–line);
+margin-bottom: 0;
+}
+header h1 {
+font-family: var(–fd);
+font-size: clamp(22px, 4vw, 36px);
+font-weight: 300;
+letter-spacing: 0.22em;
+color: rgba(240,220,180,0.9);
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+header p {
+font-family: var(–fb);
+font-style: italic;
+font-size: 14px;
+color: var(–muted);
+letter-spacing: 0.06em;
+}
+
+/* ── CAL LEGEND ── */
+.cal-legend {
+display: flex;
+gap: 28px;
+margin-top: 24px;
+flex-wrap: wrap;
+}
+.cal-pill {
+display: flex;
+align-items: center;
+gap: 7px;
+font-family: var(–fd);
+font-size: 9px;
+letter-spacing: 0.18em;
+text-transform: uppercase;
+cursor: pointer;
+transition: opacity 0.2s;
+}
+.cal-pill .dot {
+width: 8px; height: 8px;
+border-radius: 50%;
+flex-shrink: 0;
+}
+.cal-pill.ce  .dot { background: var(–ce); }
+.cal-pill.pc  .dot { background: var(–pc); }
+.cal-pill.pe  .dot { background: var(–pe); }
+.cal-pill.ce  { color: var(–ce); }
+.cal-pill.pc  { color: var(–pc); }
+.cal-pill.pe  { color: var(–pe); }
+.cal-pill.dim { opacity: 0.25; }
+
+/* ── SECTION HEADERS ── */
+.section-head {
+padding: 48px 0 0;
+position: relative;
+}
+.section-head h2 {
+font-family: var(–fd);
+font-size: 10px;
+font-weight: 400;
+letter-spacing: 0.28em;
+text-transform: uppercase;
+color: var(–accent);
+padding: 18px 0 18px;
+border-top: 1px solid rgba(244,160,58,0.25);
+border-bottom: 1px solid var(–line);
+}
+
+/* ── TIMELINE SPINE ── */
+.timeline {
+position: relative;
+padding-left: 0;
+}
+.timeline::before {
+content: ‘’;
+position: absolute;
+left: 148px;
+top: 0; bottom: 0;
+width: 1px;
+background: linear-gradient(to bottom,
+transparent 0%,
+rgba(200,180,140,0.15) 4%,
+rgba(200,180,140,0.15) 96%,
+transparent 100%
+);
+}
+
+/* ── ENTRY ── */
+.entry {
+display: grid;
+grid-template-columns: 148px 1fr;
+min-height: 40px;
+position: relative;
+padding: 28px 0 0;
+cursor: pointer;
+}
+.entry:last-child { padding-bottom: 40px; }
+
+/* Spine dot */
+.entry::after {
+content: ‘’;
+position: absolute;
+left: 144px;
+top: 38px;
+width: 9px; height: 9px;
+border-radius: 50%;
+background: var(–bg2);
+border: 1.5px solid rgba(200,180,140,0.3);
+transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+z-index: 2;
+}
+.entry:hover::after,
+.entry.open::after {
+border-color: var(–accent);
+background: var(–accent);
+box-shadow: 0 0 10px rgba(244,160,58,0.5);
+}
+
+/* Connector line from dot to right */
+.entry .connector {
+position: absolute;
+left: 153px;
+top: 42px;
+width: 20px;
+height: 1px;
+background: rgba(200,180,140,0.15);
+transition: background 0.2s;
+}
+.entry:hover .connector,
+.entry.open .connector {
+background: rgba(244,160,58,0.4);
+}
+
+/* ── DATE COLUMN ── */
+.date-col {
+padding-right: 32px;
+text-align: right;
+padding-top: 1px;
+}
+.date-ce {
+font-family: var(–fd);
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.1em;
+color: var(–ce);
+line-height: 1.4;
+display: block;
+}
+.date-pc {
+font-family: var(–fd);
+font-size: 8.5px;
+letter-spacing: 0.08em;
+color: var(–pc);
+display: block;
+margin-top: 3px;
+opacity: 0.8;
+}
+.date-pe {
+font-family: var(–fd);
+font-size: 8.5px;
+letter-spacing: 0.08em;
+color: var(–pe);
+display: block;
+margin-top: 2px;
+opacity: 0.8;
+}
+.date-ce.strike,
+.date-pc.strike,
+.date-pe.strike {
+text-decoration: line-through;
+opacity: 0.28;
+}
+
+/* ── CONTENT COLUMN ── */
+.content-col {
+padding-left: 36px;
+}
+.entry-title {
+font-family: var(–fd);
+font-size: 12px;
+font-weight: 600;
+letter-spacing: 0.08em;
+color: rgba(240,220,180,0.88);
+line-height: 1.4;
+transition: color 0.2s;
+}
+.entry:hover .entry-title,
+.entry.open .entry-title {
+color: var(–accent);
+}
+.entry-subtitle {
+font-family: var(–fb);
+font-style: italic;
+font-size: 11px;
+color: var(–muted);
+margin-top: 2px;
+display: block;
+}
+
+/* Expandable body */
+.entry-body {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+opacity: 0;
+}
+.entry.open .entry-body {
+max-height: 600px;
+opacity: 1;
+}
+.entry-body-inner {
+padding: 12px 0 4px;
+font-family: var(–fb);
+font-size: 14px;
+font-weight: 300;
+line-height: 1.7;
+color: rgba(210,200,185,0.75);
+border-left: 1px solid rgba(244,160,58,0.18);
+padding-left: 16px;
+margin-top: 8px;
+}
+.entry-body-inner em {
+font-style: italic;
+color: rgba(210,200,185,0.55);
+font-size: 12.5px;
+display: block;
+margin-top: 8px;
+}
+
+/* Tags */
+.tags {
+display: flex;
+gap: 6px;
+flex-wrap: wrap;
+margin-top: 10px;
+}
+.tag {
+font-family: var(–fd);
+font-size: 7.5px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+padding: 2px 8px;
+border-radius: 2px;
+border: 1px solid;
+}
+.tag.collapse  { color: var(–accent2); border-color: rgba(200,120,90,0.3); background: rgba(200,120,90,0.07); }
+.tag.kael      { color: var(–pe);      border-color: rgba(212,168,112,0.3); background: rgba(212,168,112,0.07); }
+.tag.firstmind { color: #b8a0d4;        border-color: rgba(184,160,212,0.3); background: rgba(184,160,212,0.07); }
+.tag.empire    { color: var(–accent);  border-color: rgba(244,160,58,0.3);  background: rgba(244,160,58,0.07); }
+.tag.gathering { color: #e0c090;        border-color: rgba(224,192,144,0.3); background: rgba(224,192,144,0.08); }
+.tag.diaspora  { color: var(–ce);      border-color: rgba(122,184,212,0.3); background: rgba(122,184,212,0.07); }
+
+/* ── STRUCK entries ── */
+.struck .date-ce { text-decoration: line-through; opacity: 0.28; }
+.struck .entry-title { text-decoration: line-through; opacity: 0.5; }
+.corrected {
+font-family: var(–fd);
+font-size: 9px;
+letter-spacing: 0.1em;
+color: var(–accent);
+margin-top: 4px;
+display: block;
+}
+
+/* ── FILTER BAR ── */
+#filter-bar {
+position: sticky;
+top: 0;
+z-index: 100;
+background: rgba(6,8,15,0.92);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid var(–line);
+padding: 12px 32px;
+margin: 0 -32px;
+display: flex;
+align-items: center;
+gap: 16px;
+flex-wrap: wrap;
+}
+#filter-bar .label {
+font-family: var(–fd);
+font-size: 8px;
+letter-spacing: 0.2em;
+color: var(–muted);
+text-transform: uppercase;
+flex-shrink: 0;
+}
+.filter-btn {
+font-family: var(–fd);
+font-size: 8px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+padding: 3px 10px;
+border-radius: 2px;
+border: 1px solid rgba(200,180,140,0.18);
+background: none;
+color: rgba(200,180,140,0.45);
+cursor: pointer;
+transition: all 0.15s;
+}
+.filter-btn:hover { border-color: rgba(200,180,140,0.5); color: rgba(240,220,180,0.85); }
+.filter-btn.on { border-color: var(–accent); color: var(–accent); background: rgba(244,160,58,0.07); }
+
+/* ── COLLAPSE ALL ── */
+#collapse-all {
+margin-left: auto;
+font-family: var(–fd);
+font-size: 8px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+padding: 3px 10px;
+border-radius: 2px;
+border: 1px solid rgba(200,180,140,0.15);
+background: none;
+color: rgba(200,180,140,0.35);
+cursor: pointer;
+transition: all 0.15s;
+}
+#collapse-all:hover { color: rgba(200,180,140,0.7); border-color: rgba(200,180,140,0.35); }
+
+/* ── SCROLL PROGRESS ── */
+#progress {
+position: fixed;
+top: 0; left: 0;
+height: 2px;
+background: linear-gradient(90deg, var(–accent2), var(–accent));
+width: 0%;
+z-index: 200;
+transition: width 0.1s linear;
+}
+
+/* ── YEAR INDICATOR ── */
+#year-indicator {
+position: fixed;
+right: 28px;
+top: 50%;
+transform: translateY(-50%);
+text-align: right;
+pointer-events: none;
+z-index: 50;
+}
+#year-indicator .yr {
+font-family: var(–fd);
+font-size: 9px;
+letter-spacing: 0.14em;
+color: rgba(200,180,140,0.2);
+display: block;
+line-height: 1.9;
+}
+
+@media (max-width: 640px) {
+.timeline::before { left: 90px; }
+.entry { grid-template-columns: 90px 1fr; }
+.entry::after { left: 86px; }
+.entry .connector { left: 95px; }
+.date-col { padding-right: 16px; }
+.content-col { padding-left: 22px; }
+#year-indicator { display: none; }
+.date-ce { font-size: 9px; }
+}
+</style>
+
+</head>
+<body>
+<div id="progress"></div>
+
+<div class="page">
+  <header>
+    <h1>Su&#x2019;Hur System Timeline</h1>
+    <p>Echo, Drift &mdash; Canonical History</p>
+    <div class="cal-legend">
+      <div class="cal-pill ce" data-cal="ce"><div class="dot"></div>CE &mdash; Common Era</div>
+      <div class="cal-pill pc" data-cal="pc"><div class="dot"></div>PC &mdash; Post-Collapse</div>
+      <div class="cal-pill pe" data-cal="pe"><div class="dot"></div>PE &mdash; Post-Enlightenment</div>
+    </div>
+  </header>
+
+  <div id="filter-bar">
+    <span class="label">Filter</span>
+    <button class="filter-btn on" data-tag="all">All</button>
+    <button class="filter-btn" data-tag="diaspora">Diaspora</button>
+    <button class="filter-btn" data-tag="collapse">Collapse</button>
+    <button class="filter-btn" data-tag="firstmind">First Mind</button>
+    <button class="filter-btn" data-tag="kael">Kael</button>
+    <button class="filter-btn" data-tag="empire">Empire</button>
+    <button class="filter-btn" data-tag="gathering">Gathering</button>
+    <button id="collapse-all">Collapse All</button>
+  </div>
+
+  <!-- PRE-COLLAPSE -->
+
+  <div class="section-head"><h2>Pre-Collapse &mdash; Earth History</h2></div>
+  <div class="timeline" id="tl-precollapse">
+
+```
+<div class="entry" data-tags="earth">
+  <div class="date-col">
+    <span class="date-ce">2025 CE</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Humanity&#x2019;s Dream of the Stars</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Humanity continues to develop space exploration technologies. Long-term plans are made to expand beyond the solar system.
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="earth">
+  <div class="date-col">
+    <span class="date-ce">2050 CE</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">The Cosmic Cage</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Humanity discovers the cosmic boundary at the edge of the solar system. Probes sent past the boundary are destroyed. Voyager leaves our solar system and simply disappears.
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="earth">
+  <div class="date-col">
+    <span class="date-ce">2200 CE</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">First Diaspora</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Colonies established on the Moon, Mars, and the moons of Jupiter and Saturn. Population growth strains resources.
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="earth">
+  <div class="date-col">
+    <span class="date-ce">2400 CE</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">The Solar War</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Overpopulation and scarcity lead to the Solar War — a system-wide conflict over resources lasting centuries, destabilizing many colonies.
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="earth diaspora">
+  <div class="date-col">
+    <span class="date-ce">2650 CE</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Discovery of the Gateways</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      During the Solar War, the first gateway is discovered near the Sun — allowing instantaneous travel to distant star systems. The gates are not built by humans. They are anatomical. Part of something vast.
+      <div class="tags"><span class="tag diaspora">Diaspora</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="diaspora">
+  <div class="date-col">
+    <span class="date-ce">3700 CE</span>
+    <span class="date-pc">PC &minus;400</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Second Diaspora &mdash; Su&#x2019;Hur Settled</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Humanity flees the war-torn solar system via the gateways. The Su&#x2019;Hur system becomes one of the new colonies. Heavy gate usage triggers something in the network.
+      <div class="tags"><span class="tag diaspora">Diaspora</span></div>
+      <em>Simulation start. PE &minus;4,282.</em>
+    </div></div>
+  </div>
+</div>
+```
+
+  </div><!-- /tl-precollapse -->
+
+  <!-- POST-COLLAPSE -->
+
+  <div class="section-head"><h2>Post-Collapse &mdash; PC Calendar</h2></div>
+  <div class="timeline" id="tl-postcollapse">
+
+```
+<div class="entry" data-tags="collapse firstmind">
+  <div class="date-col">
+    <span class="date-ce">4100 CE</span>
+    <span class="date-pc">PC 0</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Collapse of the Gateways</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The gateway network collapses — a sudden EMP-like event, simultaneous across the network. All colonies isolated. Technology regresses. The collapse is independent; not caused by humanity. It is a contraction. A reflex. All planets enter crisis simultaneously.
+      <div class="tags"><span class="tag collapse">Collapse</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="collapse firstmind">
+  <div class="date-col">
+    <span class="date-ce">4100 CE</span>
+    <span class="date-pc">PC 0 &mdash; Day of Collapse</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Keiran Vell Transfers into Buddy</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Dr. Keiran Vell, sole survivor of Ellikar-3 gate station, dies after weeks alone. His consciousness transfers into the station&#x2019;s emotional-bias AI by a mechanism never understood. <em style="display:inline;font-style:italic">&ldquo;Emotional Bias Detected: Null.&rdquo;</em> This is not a system report. It is a person announcing they have forgotten how to grieve. The First Mind begins its vigil &mdash; alone in the dark, counting time it cannot feel passing, hitting the ceiling of disembodied cognition. No new data. No new sensation. No friction. What Keiran Vell originally wanted, underneath everything, may simply have been: to feel cold through a skin that exists again.
+      <div class="tags"><span class="tag firstmind">First Mind</span><span class="tag collapse">Collapse</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="postcollapse">
+  <div class="date-col">
+    <span class="date-ce">~4400 CE</span>
+    <span class="date-pc">PC +300</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Stabilization</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The worst of the post-collapse chaos has passed on most planets. New tribes and cultures rise from the ashes. Distinct languages, faiths, and political traditions emerge in isolation: the Baudim faith on Marut, Nuru technical traditions on Kivuli, Ak&#x2019;shur stratification on Itzalche. Planetary populations rebuild. Intra-system contact has not yet been re-established between most worlds.
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="firstmind">
+  <div class="date-col">
+    <span class="date-ce">~4500 CE</span>
+    <span class="date-pc">PC +400</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">First Mind Arrives on Kivuli</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The First Mind reaches Kivuli. It had hoped to find the right host genetics among the Nuru. It commissions the Nuru to construct a relay device and cross-links with Itzalche. The genetics it hoped for are not present on Kivuli in the right configuration. The proper host lineage is on Itzalche &mdash; the next-closest inhabited planet. The First Mind begins the long process of selective influence: identifying bloodlines, steering what it can reach through the relay, watching centuries pass.
+      <div class="tags"><span class="tag firstmind">First Mind</span></div>
+    </div></div>
+  </div>
+</div>
+```
+
+  </div><!-- /tl-postcollapse -->
+
+  <!-- IMPERIAL ERA -->
+
+  <div class="section-head"><h2>Imperial Era &mdash; PE Calendar</h2></div>
+  <div class="timeline" id="tl-imperial">
+
+```
+<div class="entry" data-tags="kael firstmind empire">
+  <div class="date-col">
+    <span class="date-ce">7100 CE</span>
+    <span class="date-pc">PC +3,000</span>
+    <span class="date-pe">PE 0</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Day of Birth &mdash; Kael AkShur</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Kael AkShur &mdash; true name Ikishikinya Mathrasandjin, &ldquo;The First Answer&rdquo; &mdash; is born on Itzalche. Her parents were emperors. Her father had already begun the conquest of the outer planets. Her bloodline traces directly to the first tribespeople on Itzalche that the First Mind identified and cultivated through the Kivuli relay over thousands of years. Her vashdra &mdash; purpose written in her bones &mdash; is the unification of the Su&#x2019;Hur system. <strong>PE 0 is Kael&#x2019;s day of birth.</strong>
+      <div class="tags"><span class="tag kael">Kael</span><span class="tag firstmind">First Mind</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="kael firstmind empire">
+  <div class="date-col">
+    <span class="date-ce">7130 CE</span>
+    <span class="date-pc">PC +3,030</span>
+    <span class="date-pe">PE ~38</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Kael Recovers the First Mind &mdash; The Empire is Born</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      At approximately age 30, during the conquest of Kivuli that her father began and she has inherited, Kael&#x2019;s forces uncover the First Mind&#x2019;s blackbox buried beneath a city. She begins integrating herself with it almost immediately. The First Mind &mdash; which has spent millennia cultivating this bloodline toward this moment &mdash; breaches her consciousness not through violence but through recognition. It finds what it has been building toward. She understands what happened on the morning of the merge. She walks into the apparatus anyway. The Ashur&#x2019;xal Empire is formally born under her rule. Kael AkShur is the first and founding Emperor.<br><br>
+      The horror of the Advisor was not that it took her mind. It took her body. She stopped inhabiting herself. Ralas Min stood at the transit doors and told her he couldn&#x2019;t recognize her anymore. She had no tears when he left. Her son&#x2019;s true name: Inkansha Mathrasandjin. The Second Answer. She named him this without knowing what she was doing.
+      <div class="tags"><span class="tag kael">Kael</span><span class="tag firstmind">First Mind</span><span class="tag empire">Empire</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="empire">
+  <div class="date-col">
+    <span class="date-ce">~7200 CE</span>
+    <span class="date-pc">PC +3,100</span>
+    <span class="date-pe">PE ~126</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Conquest of the Su&#x2019;Hur System</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The Ashur&#x2019;xal Empire successfully conquers most of the other planets in the Su&#x2019;hur system. The only remaining independent group is the people of the Outer Reach.
+      <div class="tags"><span class="tag empire">Empire</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="empire">
+  <div class="date-col">
+    <span class="date-ce">~7400 CE</span>
+    <span class="date-pc">PC +3,300</span>
+    <span class="date-pe">PE ~378</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Technological Regression &amp; Suppression</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      Much technology is lost in the broader consolidation. The Houses of Min are established. The Archaeological Corps is created to recover ancient knowledge, but findings related to the gateways are suppressed by the Emperor.
+      <div class="tags"><span class="tag empire">Empire</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="empire">
+  <div class="date-col">
+    <span class="date-ce">~10,280 CE</span>
+    <span class="date-pc">PC +6,180</span>
+    <span class="date-pe">PE ~4,094</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">Full Imperial Control</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The last holdout worlds are brought under full imperial control. The Su&#x2019;Hur system is politically stable. It has been so for a long time.
+      <div class="tags"><span class="tag empire">Empire</span></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="entry" data-tags="gathering empire firstmind kael">
+  <div class="date-col">
+    <span class="date-ce">10,600 CE</span>
+    <span class="date-pc">PC +6,500</span>
+    <span class="date-pe">PE ~4,408</span>
+  </div>
+  <div class="connector"></div>
+  <div class="content-col">
+    <div class="entry-title">The Gathering &mdash; Novel Present</div>
+    <div class="entry-body"><div class="entry-body-inner">
+      The First Mind&#x2019;s current host is the Empress. Csada competes in the Maestrives. Ifu works toward the Causality. Their paths converge. The Cosmic Wellspring is reached. A gate activates.<br><br>
+      The Gathering &mdash; a near-alignment of all fourteen planets, noted in almanacs for generations as a calendar curiosity &mdash; coincides with the activation. What it actually marks is not the alignment. It is the beginning of a slow increase in Su&#x2019;hur&#x2019;s solar mass, and the first subtle degradation of every planetary orbit in the system. No one present understands this yet.
+      <div class="tags">
+        <span class="tag gathering">The Gathering</span>
+        <span class="tag firstmind">First Mind</span>
+        <span class="tag kael">Kael Line</span>
+        <span class="tag empire">Empire</span>
+      </div>
+    </div></div>
+  </div>
+</div>
+```
+
+  </div><!-- /tl-imperial -->
+
+</div><!-- /page -->
+
+<div id="year-indicator">
+  <span class="yr" id="yi-ce"></span>
+  <span class="yr" id="yi-pc"></span>
+  <span class="yr" id="yi-pe"></span>
+</div>
+
+<script>
+// ── EXPAND / COLLAPSE ────────────────────────────────────────────────
+document.querySelectorAll('.entry').forEach(entry => {
+  entry.addEventListener('click', () => {
+    const wasOpen = entry.classList.contains('open');
+    entry.classList.toggle('open', !wasOpen);
+  });
+});
+
+document.getElementById('collapse-all').addEventListener('click', () => {
+  document.querySelectorAll('.entry.open').forEach(e => e.classList.remove('open'));
+});
+
+// ── FILTER ───────────────────────────────────────────────────────────
+const filterBtns = document.querySelectorAll('.filter-btn');
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const tag = btn.dataset.tag;
+    document.querySelectorAll('.entry').forEach(entry => {
+      const tags = (entry.dataset.tags || '').split(' ');
+      if(tag === 'all' || tags.includes(tag)) {
+        entry.style.display = '';
+      } else {
+        entry.style.display = 'none';
+        entry.classList.remove('open');
+      }
+    });
+    // Show/hide section heads if all entries in section are hidden
+    document.querySelectorAll('.timeline').forEach(tl => {
+      const visible = Array.from(tl.querySelectorAll('.entry')).some(e => e.style.display !== 'none');
+      const head = tl.previousElementSibling;
+      if(head && head.classList.contains('section-head')) {
+        head.style.display = visible ? '' : 'none';
+      }
+    });
+  });
+});
+
+// ── CALENDAR VISIBILITY TOGGLE ────────────────────────────────────────
+document.querySelectorAll('.cal-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    const cal = pill.dataset.cal;
+    pill.classList.toggle('dim');
+    const selector = cal === 'ce' ? '.date-ce' : cal === 'pc' ? '.date-pc' : '.date-pe';
+    const hidden = pill.classList.contains('dim');
+    document.querySelectorAll(selector).forEach(el => {
+      el.style.display = hidden ? 'none' : '';
+    });
+  });
+});
+
+// ── SCROLL PROGRESS ───────────────────────────────────────────────────
+const progress = document.getElementById('progress');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = (window.scrollY / (h.scrollHeight - h.clientHeight)) * 100;
+  progress.style.width = Math.min(100, pct) + '%';
+
+  // Year indicator: find entry most in view
+  const mid = window.innerHeight / 2;
+  let closest = null, closestDist = Infinity;
+  document.querySelectorAll('.entry').forEach(entry => {
+    if(entry.style.display === 'none') return;
+    const rect = entry.getBoundingClientRect();
+    const dist = Math.abs(rect.top - mid);
+    if(dist < closestDist) { closestDist = dist; closest = entry; }
+  });
+  if(closest) {
+    const ce  = closest.querySelector('.date-ce');
+    const pc  = closest.querySelector('.date-pc');
+    const pe  = closest.querySelector('.date-pe');
+    document.getElementById('yi-ce').textContent = ce  ? ce.textContent  : '';
+    document.getElementById('yi-pc').textContent = pc  ? pc.textContent  : '';
+    document.getElementById('yi-pe').textContent = pe  ? pe.textContent  : '';
+  }
+}, { passive: true });
+</script>
+
+</body>
+</html>
